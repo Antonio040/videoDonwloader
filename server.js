@@ -1,37 +1,39 @@
 const express = require('express');
 const cors = require('cors');
-const ytdlp = require('yt-dlp-exec');
-const bodyParser = require('body-parser');
-
+const ytdl = require('ytdl-core');
 const app = express();
-app.use(cors({ origin: 'https://wasabi.devz.moe' }));
-app.use(bodyParser.json());
+const PORT = process.env.PORT || 3000;
 
+// ✅ Allow CORS from your frontend domain
+app.use(cors({
+    origin: 'https://wasabi.devz.moe'  // your frontend domain
+}));
+
+app.use(express.json());
+
+// 🔽 Video download endpoint
 app.post('/download', async (req, res) => {
-    const { url } = req.body;
+    const videoUrl = req.body.url;
 
-    if (!url) {
-        return res.status(400).send('Missing video URL.');
+    // Basic validation
+    if (!videoUrl || !ytdl.validateURL(videoUrl)) {
+        return res.status(400).json({ error: 'Invalid video URL' });
     }
 
     try {
-        res.setHeader('Content-Disposition', 'attachment; filename="video.mp4"');
+        const info = await ytdl.getInfo(videoUrl);
+        const format = ytdl.chooseFormat(info.formats, { quality: '18' }); // MP4 (360p)
+
+        res.setHeader('Content-Disposition', `attachment; filename="video.mp4"`);
         res.setHeader('Content-Type', 'video/mp4');
 
-        const stream = ytdlp.exec(url, {
-            output: '-',
-            format: 'mp4',
-            stdout: 'pipe'
-        });
-
-        stream.stdout.pipe(res);
+        ytdl(videoUrl, { format }).pipe(res);
     } catch (err) {
-        console.error('Download failed:', err);
-        res.status(500).send('Error downloading video');
+        console.error(err);
+        res.status(500).json({ error: 'Failed to download video' });
     }
 });
 
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
