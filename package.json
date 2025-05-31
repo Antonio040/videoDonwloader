@@ -1,0 +1,26 @@
+{
+  "name": "videodonwloader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Antonio040/videoDonwloader.git"
+  },
+  "private": true,
+  "bugs": {
+    "url": "https://github.com/Antonio040/videoDonwloader/issues"
+  },
+  "homepage": "https://github.com/Antonio040/videoDonwloader#readme",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  }
+}
